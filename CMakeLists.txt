@@ -11,4 +11,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 # 3. Executable
 add_executable(${PROJECT_NAME} 
     src/main.cpp
+    src/volatility.cpp
 )
+
+target_include_directories(${PROJECT_NAME} PRIVATE include)
