@@ -1,30 +1,16 @@
-#include <iostream>
-#include <vector>
 #include <cmath>
 #include <iomanip>
+#include <vector>
+#include <print>
 
 #include "myHeader.hpp"
 
-using std::cout, std::endl;
 using std::vector;
+using std::println;
 
-
-int main()
-{
+int main() {
     vector<int> close_data = {3, 4, 5, 6, 7, 8, 3, 4};
-
-    vector<double> logReturns = getAllTimeLogReturns(close_data);
-
-    for (int i = 0; i < logReturns.size(); i++)
-    {
-        cout << std::setprecision(20) << logReturns[i] << " ";
-    }
-    double standardDeviation = getStandardDeviation(logReturns);
-
-    cout << "\n" 
-    << standardDeviation;
-    double annualizedVolatility = getAnnualizedVolatility(standardDeviation);
-    cout << "\n" 
-    << annualizedVolatility;
+    println("{:.20g}", getVolatility(close_data));
+    displayCsvContents("PCLN-10y-stock.csv");
     return 0;
 }

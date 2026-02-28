@@ -12,6 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 add_executable(${PROJECT_NAME} 
     src/main.cpp
     src/volatility.cpp
+    src/open_csv.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
