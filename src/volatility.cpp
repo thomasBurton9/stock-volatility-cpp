@@ -3,12 +3,11 @@
 #include <vector>
 
 
-#include "myHeader.hpp"
 
 using std::log, std::pow, std::sqrt;
 using std::vector;
 
-vector<double> getAllTimeLogReturns(vector<int> close_data) {
+vector<double> getAllTimeLogReturns(vector<double> close_data) {
 
     vector<double> logReturns = {};
 
@@ -20,7 +19,7 @@ vector<double> getAllTimeLogReturns(vector<int> close_data) {
     return logReturns;
 }
 
-double getAverage(vector<double> data, bool sample) {
+double getAverage(vector<double> data, bool sample=false) {
     double sum = 0.0;
 
     for (int i = 0; i < data.size(); i++) {
@@ -33,7 +32,7 @@ double getAverage(vector<double> data, bool sample) {
     }
 }
 
-double getStandardDeviation(vector<double> data, bool sample) {
+double getStandardDeviation(vector<double> data, bool sample=true) {
     double average = getAverage(data);
 
     vector<double> deviation = {};
@@ -55,7 +54,7 @@ double getAnnualizedVolatility(double dailyStandardDeviation) {
     return dailyStandardDeviation * sqrt(252);
 }
 
-double getVolatility(vector<int> closeData) {
+double getVolatility(vector<double> closeData) {
     vector<double> allTimeLogReturns = getAllTimeLogReturns(closeData);
     double standardDeviation = getStandardDeviation(allTimeLogReturns);
     double annualizedVolatility = getAnnualizedVolatility(standardDeviation);

@@ -3,8 +3,9 @@
 #include <print>
 #include <string>
 #include <vector>
+#include <expected>
 
-#include "myHeader.hpp"
+#include "csvUtils.hpp"
 
 using std::getline;
 using std::ifstream;
@@ -12,22 +13,7 @@ using std::println;
 using std::stod;
 using std::string;
 using std::vector;
-
-
-struct stockDataStruct {
-    string Date;
-    double Open;
-    double High;
-    double Low;
-    double Close;
-    double Volume;
-    double Dividends;
-    double StockSplits;
-
-    stockDataStruct(const string& date, const std::vector<double> &v) 
-      : Date(date), Open(v[0]), High(v[1]), Low(v[2]), Close(v[3]), Volume(v[4]), Dividends(v[5]), StockSplits(v[6]) {}
-    
-};
+using std::expected, std::unexpected;
 
 vector<string> splitLine(string line, char splitValue) {
     vector<string> output;
@@ -45,41 +31,39 @@ vector<string> splitLine(string line, char splitValue) {
     return output;
 }
 
-int displayCsvContents(string filename) {
+expected<stockDataStruct, string> returnCsvStockData(string ticker) {
+    string filename = "data/" + ticker + "-10y-stock.csv";
+
     ifstream myfile(filename);
     char c;
 
     if (!myfile.is_open()) {
         println("Unable to open file");
+        return unexpected("Unable to open file");
     }
     string line;
     int i = 0;
-    string header;
     vector<vector<string>> data;
     while (getline(myfile, line)) {
         if (i == 0) {
-            header = line;
         } else {
         data.push_back(splitLine(line, ','));
         }
         i++;
     }
 
-    vector<string> headers = splitLine(header, ',');
-
-    for (string header : headers) {
-        println("{}", header);
-    }
-
-    vector<stockDataStruct> stockData;
+    vector<string> tempDates;
+    vector<vector<double>> tempData;
 
     for (vector<string> line : data) {
         vector<double> tempLine;
         for (int i = 1; i < line.size(); i++) {
             tempLine.push_back(stod(line[i]));
         }
-        stockDataStruct lineData(line[0], tempLine);
-        stockData.push_back(lineData);
+        tempData.push_back(tempLine);
+        tempDates.push_back(line[0]);
     }
-    return 0;
+    stockDataStruct stockData(tempDates, tempData);
+
+    return stockData;
 }
