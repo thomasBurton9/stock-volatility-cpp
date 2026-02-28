@@ -32,7 +32,7 @@ vector<string> splitLine(string line, char splitValue) {
 }
 
 expected<stockDataStruct, string> returnCsvStockData(string ticker) {
-    string filename = "data/" + ticker + "-10y-stock.csv";
+    string filename = "../../data/" + ticker + "-10y-stock.csv"; // Temporary path for data
 
     ifstream myfile(filename);
     char c;
@@ -53,14 +53,16 @@ expected<stockDataStruct, string> returnCsvStockData(string ticker) {
     }
 
     vector<string> tempDates;
-    vector<vector<double>> tempData;
+    vector<vector<double>> tempData(7);
 
     for (vector<string> line : data) {
         vector<double> tempLine;
         for (int i = 1; i < line.size(); i++) {
             tempLine.push_back(stod(line[i]));
         }
-        tempData.push_back(tempLine);
+        for (int i = 0; i < tempLine.size(); i++) {
+            tempData[i].push_back(tempLine[i]);
+        }
         tempDates.push_back(line[0]);
     }
     stockDataStruct stockData(tempDates, tempData);

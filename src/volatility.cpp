@@ -1,13 +1,17 @@
 #include <cmath>
 #include <iomanip>
 #include <vector>
+#include <span>
+#include <algorithm>
 
-
+#include "csvUtils.hpp"
 
 using std::log, std::pow, std::sqrt;
 using std::vector;
+using std::span;
+using std::max;
 
-vector<double> getAllTimeLogReturns(vector<double> close_data) {
+vector<double> getAllTimeLogReturns(span<double> close_data) {
 
     vector<double> logReturns = {};
 
@@ -19,7 +23,7 @@ vector<double> getAllTimeLogReturns(vector<double> close_data) {
     return logReturns;
 }
 
-double getAverage(vector<double> data, bool sample=false) {
+double getAverage(span<double> data, bool sample=false) {
     double sum = 0.0;
 
     for (int i = 0; i < data.size(); i++) {
@@ -32,7 +36,7 @@ double getAverage(vector<double> data, bool sample=false) {
     }
 }
 
-double getStandardDeviation(vector<double> data, bool sample=true) {
+double getStandardDeviation(span<double> data, bool sample=true) {
     double average = getAverage(data);
 
     vector<double> deviation = {};
@@ -50,14 +54,30 @@ double getStandardDeviation(vector<double> data, bool sample=true) {
     return standardDeviation;
 }
 
-double getAnnualizedVolatility(double dailyStandardDeviation) {
+double getAnnualizedVolatility(double dailyStandardDeviation, int vol_time_period) {
     return dailyStandardDeviation * sqrt(252);
 }
 
-double getVolatility(vector<double> closeData) {
-    vector<double> allTimeLogReturns = getAllTimeLogReturns(closeData);
-    double standardDeviation = getStandardDeviation(allTimeLogReturns);
-    double annualizedVolatility = getAnnualizedVolatility(standardDeviation);
+double getVolatility(span<double> closeLogReturns, int vol_time_period) {
+    double standardDeviation = getStandardDeviation(closeLogReturns);
+    double annualizedVolatility = getAnnualizedVolatility(standardDeviation, vol_time_period);
 
     return annualizedVolatility;
+}
+
+vector<double> get_moving_volatility(int window, stockDataStruct mainData) {
+    vector<double> logReturns = getAllTimeLogReturns(mainData.Close);
+
+    vector<double> avgVolatility(logReturns.size(), 0);
+
+    for (int i = 2; i <= avgVolatility.size(); i++) {
+        // Get a slice -> Calculate the standard deviation -> calculate the annualized volatility -> append it
+        int initial_index = max(i-window, 0);
+        span<double> view = span(logReturns).subspan(initial_index, i-initial_index);
+        avgVolatility[i-1] = getVolatility(view, window);
+    }
+
+    avgVolatility.insert(avgVolatility.begin(), 0.0);
+    return avgVolatility;
+
 }

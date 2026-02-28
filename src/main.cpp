@@ -62,9 +62,18 @@ int main() {
     if (!ticker) {
         return 1;
     }
-    vector<double> close_data = {3, 4, 5, 6, 7, 8, 3, 4};
-    println("{:.20g}", getVolatility(close_data));
 
-    auto stockData = returnCsvStockData("PCLN");
+    auto stockData = returnCsvStockData(*ticker);
+
+    if (!stockData) {
+        return 1;
+    }
+
+    vector<double> volatilityStockData = get_moving_volatility(*vol_time_period, *stockData);
+
+    for (int i = 0; i < volatilityStockData.size(); i++) {
+        print("{:.3f} ", volatilityStockData[i]);
+    }
+
     return 0;
 }
