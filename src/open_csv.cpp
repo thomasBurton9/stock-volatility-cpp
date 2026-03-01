@@ -66,7 +66,7 @@ double getUnixTime(string full_date) {
 
 expected<stockDataStruct, string> returnCsvStockData(string ticker, int time_period) {
     string filename =
-        "../../data/" + ticker + "-10y-stock.csv"; // Temporary path for data
+        "../../../data/" + ticker + "-10y-stock.csv"; // Temporary path for data
 
     ifstream myfile(filename);
     char c;

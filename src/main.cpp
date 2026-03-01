@@ -118,7 +118,8 @@ int main() {
         auto stockData = returnCsvStockData(ticker, time_period);
 
         if (!stockData) {
-            return 1;
+            println("Error: {}. Please try again or enter 'q' to quit", stockData.error());
+            continue;
         }
 
         vector<double> volatilityStockData =
