@@ -115,7 +115,7 @@ int main() {
         if (!get_user_values(time_period, vol_time_period, ticker)) {
             return 0;
         }
-        auto stockData = returnCsvStockData(ticker);
+        auto stockData = returnCsvStockData(ticker, time_period);
 
         if (!stockData) {
             return 1;
@@ -129,7 +129,7 @@ int main() {
         }
 
         string title = ticker + " " + to_string(vol_time_period) + " day volatility moving average";
-        
+
         startGraphing(stockData->Dates, volatilityStockData, title);
 
         print("Do you want to graph another ticker/time period? Y/n: ");

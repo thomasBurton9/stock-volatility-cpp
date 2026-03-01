@@ -19,4 +19,4 @@ struct stockDataStruct {
     
 };
 
-std::expected<stockDataStruct, std::string> returnCsvStockData(std::string ticker);
+std::expected<stockDataStruct, std::string> returnCsvStockData(std::string ticker, int time_period);

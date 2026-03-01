@@ -5,7 +5,7 @@
 #include <print>
 #include <string>
 #include <vector>
-
+#include <span>
 #include "csvUtils.hpp"
 
 using std::expected, std::unexpected;
@@ -16,6 +16,8 @@ using std::stod;
 using std::stoi;
 using std::string;
 using std::vector;
+using std::max;
+using std::span;
 
 string cleanDate(string date) {
     int whiteSpaceIndex;
@@ -62,7 +64,7 @@ double getUnixTime(string full_date) {
 }
 
 
-expected<stockDataStruct, string> returnCsvStockData(string ticker) {
+expected<stockDataStruct, string> returnCsvStockData(string ticker, int time_period) {
     string filename =
         "../../data/" + ticker + "-10y-stock.csv"; // Temporary path for data
 
@@ -70,7 +72,6 @@ expected<stockDataStruct, string> returnCsvStockData(string ticker) {
     char c;
 
     if (!myfile.is_open()) {
-        println("Unable to open file");
         return unexpected("Unable to open file");
     }
     string line;
@@ -84,10 +85,15 @@ expected<stockDataStruct, string> returnCsvStockData(string ticker) {
         i++;
     }
 
+    if (data.size() < 3) {
+        return unexpected("Not enough Data");
+    }
     vector<double> tempDates;
     vector<vector<double>> tempData(7);
 
-    for (vector<string> line : data) {
+    int starting_index = max(0, static_cast<int>(data.size() - time_period));
+
+    for (vector<string> line : span(data).subspan(starting_index, data.size() - starting_index - 1)) {
         vector<double> tempLine;
         for (int i = 1; i < line.size(); i++) {
             tempLine.push_back(stod(line[i]));
