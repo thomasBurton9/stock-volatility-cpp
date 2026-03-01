@@ -129,7 +129,8 @@ int main() {
         }
 
         string title = ticker + " " + to_string(vol_time_period) + " day volatility moving average";
-        startGraphing(x, volatilityStockData, title);
+        
+        startGraphing(stockData->Dates, volatilityStockData, title);
 
         print("Do you want to graph another ticker/time period? Y/n: ");
         auto user_string_input = get_string();

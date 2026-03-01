@@ -1,19 +1,32 @@
+#include <chrono>
 #include <cstdio>
+#include <expected>
 #include <fstream>
 #include <print>
 #include <string>
 #include <vector>
-#include <expected>
 
 #include "csvUtils.hpp"
 
+using std::expected, std::unexpected;
 using std::getline;
 using std::ifstream;
 using std::println;
 using std::stod;
+using std::stoi;
 using std::string;
 using std::vector;
-using std::expected, std::unexpected;
+
+string cleanDate(string date) {
+    int whiteSpaceIndex;
+    for (int i = 0; i < date.size(); i++) {
+        if (date[i] == ' ') {
+            whiteSpaceIndex = i;
+            break;
+        }
+    }
+    return date.substr(0, whiteSpaceIndex);
+}
 
 vector<string> splitLine(string line, char splitValue) {
     vector<string> output;
@@ -31,8 +44,27 @@ vector<string> splitLine(string line, char splitValue) {
     return output;
 }
 
+double getUnixTime(string full_date) {
+    vector<string> dates = splitLine(full_date, '-');
+
+    vector<int> int_dates = {stoi(dates[0]), stoi(dates[1]), stoi(dates[2])};
+
+    auto date = std::chrono::year_month_day{std::chrono::year{int_dates[0]},
+                                            std::chrono::month{static_cast<unsigned>(int_dates[1])},
+                                            std::chrono::day{static_cast<unsigned>(int_dates[2])}};
+
+    auto tp = std::chrono::sys_days(date);
+
+    double ts = (double)std::chrono::duration_cast<std::chrono::seconds>(
+                    tp.time_since_epoch())
+                    .count();
+    return ts;
+}
+
+
 expected<stockDataStruct, string> returnCsvStockData(string ticker) {
-    string filename = "../../data/" + ticker + "-10y-stock.csv"; // Temporary path for data
+    string filename =
+        "../../data/" + ticker + "-10y-stock.csv"; // Temporary path for data
 
     ifstream myfile(filename);
     char c;
@@ -47,12 +79,12 @@ expected<stockDataStruct, string> returnCsvStockData(string ticker) {
     while (getline(myfile, line)) {
         if (i == 0) {
         } else {
-        data.push_back(splitLine(line, ','));
+            data.push_back(splitLine(line, ','));
         }
         i++;
     }
 
-    vector<string> tempDates;
+    vector<double> tempDates;
     vector<vector<double>> tempData(7);
 
     for (vector<string> line : data) {
@@ -63,7 +95,7 @@ expected<stockDataStruct, string> returnCsvStockData(string ticker) {
         for (int i = 0; i < tempLine.size(); i++) {
             tempData[i].push_back(tempLine[i]);
         }
-        tempDates.push_back(line[0]);
+        tempDates.push_back(getUnixTime(cleanDate(line[0])));
     }
     stockDataStruct stockData(tempDates, tempData);
 

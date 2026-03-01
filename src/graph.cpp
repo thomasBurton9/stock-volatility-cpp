@@ -22,7 +22,12 @@ int graphData(vector<double> x, vector<double> y, string title, ImGuiIO &io) {
     ImGui::SetNextWindowSize(io.DisplaySize);
     ImGui::Begin(title.data(), nullptr,
                  ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoMove);
+
     if (ImPlot::BeginPlot(title.data(), ImVec2(-1, -1))) {
+
+        ImPlot::SetupAxis(ImAxis_X1, "Date", ImPlotAxisFlags_None);
+        ImPlot::SetupAxisScale(ImAxis_X1, ImPlotScale_Time);
+
         ImPlot::PlotLine("##NoKey", x.data(), y.data(), x.size(),
                          ImPlotItemFlags_NoLegend);
         ImPlot::EndPlot();
