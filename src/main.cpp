@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "csvUtils.hpp"
+#include "graphUtils.hpp"
 #include "volatilityUtils.hpp"
 
 using std::cin;
@@ -21,6 +22,7 @@ using std::println;
 using std::string;
 using std::unexpected;
 using std::vector;
+using std::to_string;
 
 enum class StringError { EmptyInput };
 
@@ -121,11 +123,20 @@ int main() {
 
         vector<double> volatilityStockData =
             get_moving_volatility(vol_time_period, *stockData);
-
+        vector<double> x;
         for (int i = 0; i < volatilityStockData.size(); i++) {
-            print("{:.3f} ", volatilityStockData[i]);
+            x.push_back(i);
         }
-        println("");
+
+        string title = ticker + " " + to_string(vol_time_period) + " day volatility moving average";
+        startGraphing(x, volatilityStockData, title);
+
+        print("Do you want to graph another ticker/time period? Y/n: ");
+        auto user_string_input = get_string();
+
+        if (user_string_input == "n") {
+            return 0;
+        }
     }
 
     return 0;

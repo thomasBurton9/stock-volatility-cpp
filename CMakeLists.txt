@@ -13,6 +13,15 @@ add_executable(${PROJECT_NAME}
     src/main.cpp
     src/volatility.cpp
     src/open_csv.cpp
+    src/graph.cpp
 )
 
 target_include_directories(${PROJECT_NAME} PRIVATE include)
+
+find_package(SDL3 CONFIG REQUIRED)
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE SDL3::SDL3 imgui::imgui)
+
+find_package(implot CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE implot::implot)
+
